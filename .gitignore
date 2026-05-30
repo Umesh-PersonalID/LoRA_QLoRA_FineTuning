@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.pyc
+
+# HuggingFace caches
+.cache/
+.huggingface/
+
+# Training outputs
+outputs/checkpoints/
+outputs/lora_checkpoints/
+
+# Large model files
+*.safetensors
+*.bin
+
+# Conda
+.env
+venv/
