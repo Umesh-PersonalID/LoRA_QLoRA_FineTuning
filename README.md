@@ -6,3 +6,5 @@ Setup :
 * Infrastructure: AWS EC2 (Tesla T4 16GB)
 * Frameworks: PyTorch, Hugging Face Transformers, PEFT
 * Methods: LoRA & QLoRA (4-bit NF4 Quantization)
+
+![Project Screenshot](data/combined_plot.png)
