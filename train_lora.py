@@ -16,10 +16,6 @@ from trl import SFTTrainer
 
 MODEL_NAME = "google/gemma-3-1b-it"
 
-# ==========================================================
-# DATASET
-# ==========================================================
-
 train_dataset = load_dataset(
     "json",
     data_files="data/train_split.jsonl",
@@ -46,16 +42,9 @@ def format_example(example):
 train_dataset = train_dataset.map(format_example)
 val_dataset = val_dataset.map(format_example)
 
-# ==========================================================
-# TOKENIZER
-# ==========================================================
 
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 tokenizer.pad_token = tokenizer.eos_token
-
-# ==========================================================
-# MODEL (LoRA, NO QUANTIZATION)
-# ==========================================================
 
 model = AutoModelForCausalLM.from_pretrained(
     MODEL_NAME,
@@ -64,10 +53,6 @@ model = AutoModelForCausalLM.from_pretrained(
 )
 
 model.config.use_cache = False
-
-# ==========================================================
-# LORA CONFIG
-# ==========================================================
 
 peft_config = LoraConfig(
     r=16,
@@ -89,10 +74,6 @@ peft_config = LoraConfig(
 model = get_peft_model(model, peft_config)
 
 model.print_trainable_parameters()
-
-# ==========================================================
-# TRAINING ARGS
-# ==========================================================
 
 training_args = TrainingArguments(
     output_dir="outputs/lora_checkpoints",
@@ -130,9 +111,6 @@ training_args = TrainingArguments(
     report_to="none",
 )
 
-# ==========================================================
-# TRAINER
-# ==========================================================
 
 trainer = SFTTrainer(
     model=model,
@@ -142,15 +120,7 @@ trainer = SFTTrainer(
     args=training_args,
 )
 
-# ==========================================================
-# TRAIN
-# ==========================================================
-
 trainer.train()
-
-# ==========================================================
-# SAVE
-# ==========================================================
 
 trainer.save_model("outputs/lora_adapter")
 tokenizer.save_pretrained("outputs/lora_adapter")
