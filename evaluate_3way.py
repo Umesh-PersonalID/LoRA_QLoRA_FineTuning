@@ -11,10 +11,6 @@ BASE_MODEL = "google/gemma-3-1b-it"
 QLORA_PATH = "outputs/final_adapter"
 LORA_PATH = "outputs/lora_adapter"
 
-# ==================================================
-# Load Test Set
-# ==================================================
-
 test_data = []
 
 with open("data/test_split.jsonl", "r") as f:
@@ -23,15 +19,9 @@ with open("data/test_split.jsonl", "r") as f:
 
 print(f"Loaded {len(test_data)} test examples")
 
-# ==================================================
-# Tokenizer
-# ==================================================
 
 tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL)
 
-# ==================================================
-# Base Model
-# ==================================================
 
 print("\nLoading Base Model...")
 
@@ -41,9 +31,6 @@ base_model = AutoModelForCausalLM.from_pretrained(
     device_map="auto"
 )
 
-# ==================================================
-# QLoRA Model
-# ==================================================
 
 print("Loading QLoRA Model...")
 
@@ -58,9 +45,6 @@ qlora_model = PeftModel.from_pretrained(
     QLORA_PATH
 )
 
-# ==================================================
-# LoRA Model
-# ==================================================
 
 print("Loading LoRA Model...")
 
@@ -75,9 +59,6 @@ lora_model = PeftModel.from_pretrained(
     LORA_PATH
 )
 
-# ==================================================
-# Generation Function
-# ==================================================
 
 def generate(model, prompt):
 
@@ -112,9 +93,6 @@ def generate(model, prompt):
 
     return result.strip()
 
-# ==================================================
-# Generate Predictions
-# ==================================================
 
 references = []
 
@@ -143,9 +121,6 @@ for sample in tqdm(test_data):
         generate(lora_model, prompt)
     )
 
-# ==================================================
-# BERTScore
-# ==================================================
 
 print("\nComputing BERTScore...\n")
 
@@ -170,9 +145,6 @@ _, _, lora_f1 = score(
     verbose=True
 )
 
-# ==================================================
-# ROUGE-L
-# ==================================================
 
 scorer = rouge_scorer.RougeScorer(
     ["rougeL"],
@@ -202,9 +174,6 @@ for ref, b, q, l in zip(
         scorer.score(ref, l)["rougeL"].fmeasure
     )
 
-# ==================================================
-# Results
-# ==================================================
 
 print("\n")
 print("=" * 60)
@@ -237,9 +206,6 @@ print(
     f"LoRA ROUGE-L            : {sum(lora_rouge)/len(lora_rouge):.4f}"
 )
 
-# ==================================================
-# Samples
-# ==================================================
 
 print("\n")
 print("=" * 60)
