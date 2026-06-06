@@ -9,10 +9,6 @@ from rouge_score import rouge_scorer
 BASE_MODEL = "google/gemma-3-1b-it"
 ADAPTER_PATH = "outputs/final_adapter"
 
-# -------------------------
-# Load test set
-# -------------------------
-
 test_data = []
 
 with open("data/test_split.jsonl", "r") as f:
@@ -21,25 +17,14 @@ with open("data/test_split.jsonl", "r") as f:
 
 print(f"Loaded {len(test_data)} test examples")
 
-# -------------------------
-# Load tokenizer
-# -------------------------
 
 tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL)
-
-# -------------------------
-# Load Base Model
-# -------------------------
 
 base_model = AutoModelForCausalLM.from_pretrained(
     BASE_MODEL,
     torch_dtype=torch.float16,
     device_map="auto"
 )
-
-# -------------------------
-# Load Fine-tuned Model
-# -------------------------
 
 ft_model = AutoModelForCausalLM.from_pretrained(
     BASE_MODEL,
@@ -52,9 +37,6 @@ ft_model = PeftModel.from_pretrained(
     ADAPTER_PATH
 )
 
-# -------------------------
-# Generate helper
-# -------------------------
 
 def generate(model, prompt):
 
@@ -85,10 +67,6 @@ def generate(model, prompt):
 
     return result.split("model")[-1].strip()
 
-# -------------------------
-# Inference
-# -------------------------
-
 references = []
 
 base_outputs = []
@@ -107,10 +85,6 @@ for sample in tqdm(test_data):
 
     base_outputs.append(base_pred)
     ft_outputs.append(ft_pred)
-
-# -------------------------
-# BERTScore
-# -------------------------
 
 print("\nComputing BERTScore...\n")
 
@@ -138,9 +112,6 @@ print(
     f"Fine-Tuned F1: {F1_ft.mean():.4f}"
 )
 
-# -------------------------
-# ROUGE-L
-# -------------------------
 
 scorer = rouge_scorer.RougeScorer(
     ["rougeL"],
@@ -173,10 +144,6 @@ print(
 print(
     f"Fine-Tuned ROUGE-L: {sum(ft_rouge)/len(ft_rouge):.4f}"
 )
-
-# -------------------------
-# Sample outputs
-# -------------------------
 
 print("\n========== Samples ==========\n")
 
