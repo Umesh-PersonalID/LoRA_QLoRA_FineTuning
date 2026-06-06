@@ -15,7 +15,6 @@ from trl import SFTTrainer
 
 MODEL_NAME = "google/gemma-3-1b-it"
  
-# ── Dataset ────────────────────────────────────────────────────────────────────
 train_dataset = load_dataset("json", data_files="data/train_split.jsonl", split="train")
 val_dataset   = load_dataset("json", data_files="data/val_split.jsonl",   split="train")
  
